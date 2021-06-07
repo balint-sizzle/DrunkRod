@@ -17,12 +17,12 @@ def draw_text(pos):
     thing = font.render("my dad", 1, (255,255,255))
     canvas.blit(thing, (pos[0]-100, pos[1]-50))
 
-def draw_rect(rect):
+def draw_rect(shape):
     verts = []
-    bod_x = rect.body.position.x
-    bod_y = rect.body.position.y
-    for v in rect.get_vertices():
-        verts.append((v.x+bod_x, v.y + bod_y))
+    for v in shape.get_vertices():
+        x = v.rotated(shape.body.angle)[0] + shape.body.position[0]
+        y = v.rotated(shape.body.angle)[1] + shape.body.position[1]
+        verts.append((x, y))
     gfxdraw.filled_polygon(canvas, verts, pg.Color("Red"))
 
 def add_force(poly):
@@ -30,28 +30,31 @@ def add_force(poly):
 
 def move_left(poly):
     poly.body.position = (poly.body.position.x-10, poly.body.position.y)
+    pm.Body.update_position(poly.body, 0.1)
 
-space._set_gravity((0,50))
+space._set_gravity((0,100))
 
 rod_w, rod_h = 10, 100
 base_w, base_h = 200, 20
 
-rod_b = pm.Body(1, 1, body_type=pm.Body.DYNAMIC)
+rod_b = pm.Body(10, 1, body_type=pm.Body.DYNAMIC)
 base_b = pm.Body(1, 1, body_type=pm.Body.STATIC)
 
-rod_b.position = (400, 325)
+rod_b.position = (400, 380)
 base_b.position = (400, 400)
 
 
 rod = pm.Poly(rod_b, rect_shape(rod_w, rod_h))
 base = pm.Poly(base_b, rect_shape(base_w, base_h))
 
-rod.friction = 1
-base.friction = 1
+rod.elasticity=0.0
+base.elasticity=0.0
+# rod.friction = 1
+# base.friction = 1
 
-space.add_default_collision_handler()
+#space.add_default_collision_handler()
 
-#space.add(base_b, base)
+space.add(base_b, base)
 space.add(rod_b, rod)
 
 
