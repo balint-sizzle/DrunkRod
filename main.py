@@ -25,25 +25,34 @@ def draw_rect(rect):
         verts.append((v.x+bod_x, v.y + bod_y))
     gfxdraw.filled_polygon(canvas, verts, pg.Color("Red"))
 
+def add_force(poly):
+    poly.body.apply_impulse_at_world_point((10,0), (400,400))
+
+def move_left(poly):
+    poly.body.position = (poly.body.position.x-10, poly.body.position.y)
 
 space._set_gravity((0,50))
 
-rod_w, rod_h = 20, 100
+rod_w, rod_h = 10, 100
 base_w, base_h = 200, 20
 
 rod_b = pm.Body(1, 1, body_type=pm.Body.DYNAMIC)
-base_b = pm.Body(10, 1, body_type=pm.Body.STATIC)
+base_b = pm.Body(1, 1, body_type=pm.Body.STATIC)
 
-rod_b.position = (400, 350)
+rod_b.position = (400, 325)
 base_b.position = (400, 400)
 
 
 rod = pm.Poly(rod_b, rect_shape(rod_w, rod_h))
 base = pm.Poly(base_b, rect_shape(base_w, base_h))
 
+rod.friction = 1
+base.friction = 1
+
+space.add_default_collision_handler()
+
+#space.add(base_b, base)
 space.add(rod_b, rod)
-space.add(base_b, base)
-space.add_wildcard_collision_handler(1)
 
 
 print(base.collision_type)
@@ -51,6 +60,13 @@ print(rod.bb)
 
 while True:
     for event in pg.event.get():
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_DOWN:
+                add_force(rod)
+            if event.key == pg.K_UP:
+                add_force(base)
+            if event.key == pg.K_LEFT:
+                move_left(base)
         if event.type == pg.QUIT:
             pg.quit()
 
@@ -59,6 +75,5 @@ while True:
     canvas.fill(pg.Color("Grey"))
     draw_rect(rod)
     draw_rect(base)
-    draw_text((x,y))
     pg.display.flip()
     space.step(1/500)
