@@ -32,46 +32,30 @@ def add_force_RIGHT(poly):
     poly.body.apply_impulse_at_local_point((1000,0), (0,0))
 
 def move_left(poly):
-    poly.body.position = (poly.body.position.x-100, poly.body.position.y)
+    poly.body.position = (poly.body.position.x-1, poly.body.position.y)
     pm.Body.update_position(poly.body, 0.1)
 
 def move_right(poly):
-    poly.body.position = (poly.body.position.x+100, poly.body.position.y)
+    poly.body.position = (poly.body.position.x+1, poly.body.position.y)
     pm.Body.update_position(poly.body, 0.1)
 
 space._set_gravity((0,100))
 
-rod_w, rod_h = 10, 100
 base_w, base_h = 200, 20
-base_b_w, base_b_h = 2000, 20
+base_b = pm.Body(1, 100, body_type=pm.Body.KINEMATIC)
+circle_b = pm.Body(1, 1, body_type=pm.Body.DYNAMIC)
 
-rod_b = pm.Body(1, 1, body_type=pm.Body.DYNAMIC)
-base_b = pm.Body(1, 100, body_type=pm.Body.DYNAMIC)
-base_base_b = pm.Body(1, 100, body_type=pm.Body.STATIC)
-#joint = pm.PinJoint(rod_b, base_b, (0, -100), (0, -11))
-#joint._set_distance(10)
-
-rod_b.position = (400, 400-rod_h/2)
-base_b.position = (400, 400+base_h/2)
-base_base_b.position = (400, 410+base_h/2+base_b_h/2)
-
-rod = pm.Poly(rod_b, rect_shape(rod_w, rod_h))
 base = pm.Poly(base_b, rect_shape(base_w, base_h))
-base_base = pm.Poly(base_base_b, rect_shape(base_b_w, base_b_h))
+circle = pm.Circle(circle_b, 1)
 
-rod.friction = 1
-base.friction = 1
-base_base.friction = 10
-rod_b.elasticity = 0.0
-base_b.elasticity = 0.0
-base_base_b.elasticity = 0.0
-#space.add_default_collision_handler()
+base_b.position = (400, 400)
+circle_b.position = (400, 320)
 
+joint = pm.PinJoint(circle_b, base_b, (0, 0), (0, -base_h/2))
+
+space.add(circle_b, circle)
 space.add(base_b, base)
-space.add(rod_b, rod)
-space.add(base_base_b, base_base)
-#space.add(joint)
-
+space.add(joint)
 
 while True:
     for event in pg.event.get():
@@ -82,9 +66,9 @@ while True:
             if event.key == pg.K_UP:
                 pass
             if event.key == pg.K_LEFT:
-                add_force_LEFT(base)
+                move_left(base)
             if event.key == pg.K_RIGHT:
-                add_force_RIGHT(base)
+                move_right(base)
         if event.type == pg.QUIT:
             pg.quit()
 
