@@ -2,11 +2,12 @@ import pymunk as pm
 import pygame as pg
 from pygame import gfxdraw
 import pymunk.pygame_util as pmg
+
 pg.init()
 canvas = pg.display.set_mode((800,800))
 clock = pg.time.Clock()
 space = pm.Space()
-
+draw_options = pmg.DrawOptions(canvas)
 
 
 def rect_shape(w, h):
@@ -29,7 +30,11 @@ def add_force(poly):
     poly.body.apply_impulse_at_world_point((10,0), (400,400))
 
 def move_left(poly):
-    poly.body.position = (poly.body.position.x-10, poly.body.position.y)
+    poly.body.position = (poly.body.position.x-100, poly.body.position.y)
+    pm.Body.update_position(poly.body, 0.1)
+
+def move_right(poly):
+    poly.body.position = (poly.body.position.x+100, poly.body.position.y)
     pm.Body.update_position(poly.body, 0.1)
 
 space._set_gravity((0,100))
@@ -37,46 +42,46 @@ space._set_gravity((0,100))
 rod_w, rod_h = 10, 100
 base_w, base_h = 200, 20
 
-rod_b = pm.Body(10, 1, body_type=pm.Body.DYNAMIC)
-base_b = pm.Body(1, 1, body_type=pm.Body.STATIC)
+rod_b = pm.Body(1, 5, body_type=pm.Body.DYNAMIC)
+base_b = pm.Body(1, 1, body_type=pm.Body.KINEMATIC)
 
-rod_b.position = (400, 380)
-base_b.position = (400, 400)
+joint = pm.PinJoint(rod_b, base_b, (0, -51), (0, -11))
+joint._set_distance(1)
+
+rod_b.position = (400, 300)
+base_b.position = (400, 410)
 
 
-rod = pm.Poly(rod_b, rect_shape(rod_w, rod_h))
+#rod = pm.Poly(rod_b, rect_shape(rod_w, rod_h))
 base = pm.Poly(base_b, rect_shape(base_w, base_h))
 
-rod.elasticity=0.0
-base.elasticity=0.0
-# rod.friction = 1
-# base.friction = 1
 
 #space.add_default_collision_handler()
 
 space.add(base_b, base)
-space.add(rod_b, rod)
+space.add(rod_b)
+space.add(joint)
 
-
-print(base.collision_type)
-print(rod.bb)
 
 while True:
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_DOWN:
-                add_force(rod)
+                pass
+                #add_force(rod)
             if event.key == pg.K_UP:
                 add_force(base)
             if event.key == pg.K_LEFT:
                 move_left(base)
+            if event.key == pg.K_RIGHT:
+                move_right(base)
         if event.type == pg.QUIT:
             pg.quit()
 
-    x = int(rod.body.position.x)
-    y = int(rod.body.position.y)
     canvas.fill(pg.Color("Grey"))
-    draw_rect(rod)
-    draw_rect(base)
-    pg.display.flip()
+    
     space.step(1/500)
+
+    space.debug_draw(draw_options)
+    pg.display.flip()
+    
