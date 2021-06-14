@@ -1,14 +1,14 @@
 import pymunk as pm
 import pygame as pg
-from pygame import gfxdraw
+# from pygame import gfxdraw
 import pymunk.pygame_util as pmg
 from math import atan2
 
-#pg.init()
-#canvas = pg.display.set_mode((800,800))
+pg.init()
+canvas = pg.display.set_mode((800,800))
 clock = pg.time.Clock()
 space = pm.Space()
-#draw_options = pmg.DrawOptions(canvas)
+draw_options = pmg.DrawOptions(canvas)
 
 
 def rect_shape(w, h):
@@ -51,9 +51,11 @@ joint = pm.PinJoint(circle_b, base_b, (0, 0), (0, -base_h/2))
 space.add(circle_b, circle)
 space.add(base_b, base)
 space.add(joint)
-print(circle.body.position)
 
-while 1:
+step_size = 1/500
+time_elapsed = 0
+
+while not fallen:
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_DOWN:
@@ -68,15 +70,18 @@ while 1:
         if event.type == pg.QUIT:
             pg.quit()
 
-    move_body(0.01, base)
-    #canvas.fill(pg.Color("Grey"))
+    move_body(0.1, base)
+    canvas.fill(pg.Color("Grey"))
     
-    space.step(1/500)
+    space.step(step_size)
     rod_angle = get_angle(base.body, circle.body)
 
     if abs(rod_angle) > 45:
-        fallen = True
-    print(rod_angle)
-    #space.debug_draw(draw_options)
+        pass
+        #fallen = True
+        #print(time_elapsed)
+        
+    time_elapsed += step_size
+    space.debug_draw(draw_options)
     
-    #pg.display.flip()
+    pg.display.flip()
