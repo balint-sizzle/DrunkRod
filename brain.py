@@ -6,4 +6,10 @@
 import neat
 
 
-config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, "config.ini")
+config = neat.config.Config(neat.DefaultGenome,
+                            neat.DefaultReproduction,
+                            neat.DefaultSpeciesSet,
+                            neat.DefaultStagnation,
+                            "config.ini")
+
+
