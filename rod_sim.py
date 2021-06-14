@@ -1,4 +1,5 @@
 import pymunk as pm
+import random
 from math import atan2
 from math import pi
 
@@ -6,7 +7,7 @@ from math import pi
 class Jack:
     fallen = False
     base_w, base_h = 600, 20
-    step_size = 1/50
+    step_size = 1/500
     time_elapsed = 0
 
     def __init__(self):
@@ -16,7 +17,8 @@ class Jack:
         self.base_b = pm.Body(1, 100, body_type=pm.Body.KINEMATIC)
         self.circle_b = pm.Body(1, 1, body_type=pm.Body.DYNAMIC)
 
-        self.base_b.position = (400, 500)
+        spice_factor = random.choice([-200, -150, -100, 100, 150, 200])
+        self.base_b.position = (400+spice_factor, 500)
         self.circle_b.position = (400, 320)
 
         joint = pm.PinJoint(self.circle_b, self.base_b, (0, 0), (0, -self.base_h/2))
@@ -37,6 +39,7 @@ class Jack:
 
     def move_base(self, delta_p):
         self.move_body(delta_p)
+        
         self.space.step(self.step_size)
         self.time_elapsed += self.step_size
 

@@ -12,7 +12,7 @@ from rod_sim import Jack
 from visualise_rod import RodDraw
 
 
-sigmoid_scaling_factor = 100
+sigmoid_scaling_factor = 10
 
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
@@ -23,9 +23,12 @@ def eval_genomes(genomes, config):
             if abs(angle) > 45:
                 jack.fallen = True
                 break
+            if jack.base_b.position.x < 0 or jack.base_b.position.x > 800:
+                jack.fallen = True
+                break
             output = net.activate([angle])[-1]
             jack.move_base(output * sigmoid_scaling_factor)
-        genome.fitness = jack.time_elapsed
+        genome.fitness = jack.time_elapsed - abs(jack.base_b.position.x-400)
 
 def run(config):
     # Load configuration.
@@ -43,7 +46,7 @@ def run(config):
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(4))
+    p.add_reporter(neat.Checkpointer(10, filename_prefix="checkpoints/neat-checkpoint-"))
     print("Reporter created")
 
     # Run for up to 300 generations.
@@ -58,7 +61,7 @@ def run(config):
     winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
 
     jack_draw = RodDraw()
-    while jack_draw.jack_rod.time_elapsed < 100 and not jack_draw.jack_rod.fallen:
+    while not jack_draw.jack_rod.fallen:
         output = winner_net.activate([jack_draw.jack_rod.get_angle()])[-1]
         jack_draw.jack_rod.move_base(output * sigmoid_scaling_factor)
         jack_draw.draw()

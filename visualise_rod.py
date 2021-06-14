@@ -15,8 +15,8 @@ class RodDraw(Jack):
     def draw(self):
         self.canvas.fill(pg.Color("Grey"))
         self.jack_rod.space.debug_draw(self.draw_options)
-        print(self.jack_rod.base_b.position)
-        pg.display.update()
+        #print(self.jack_rod.base_b.position, end="\r", flush=True)
+        pg.display.flip()
     
     def kill(self):
         pg.quit()
