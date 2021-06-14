@@ -7,16 +7,16 @@ from math import atan2
 class RodDraw(Jack):
     def __init__(self):
         pg.init()
-        canvas = pg.display.set_mode((800,800))
-        self.draw_options = pmg.DrawOptions(canvas)
+        self.canvas = pg.display.set_mode((800,800))
+        self.draw_options = pmg.DrawOptions(self.canvas)
 
         self.jack_rod = Jack()
-        canvas.fill(pg.Color("Grey"))
-            
+
     def draw(self):
+        self.canvas.fill(pg.Color("Grey"))
         self.jack_rod.space.debug_draw(self.draw_options)
-        pg.display.flip()
+        print(self.jack_rod.base_b.position)
+        pg.display.update()
     
     def kill(self):
         pg.quit()
-        exit()

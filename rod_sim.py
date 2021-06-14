@@ -10,33 +10,33 @@ class Jack:
     time_elapsed = 0
 
     def __init__(self):
-        space = pm.Space()
+        self.space = pm.Space()
 
-        space._set_gravity((0,100))
+        self.space._set_gravity((0,100))
         self.base_b = pm.Body(1, 100, body_type=pm.Body.KINEMATIC)
-        circle_b = pm.Body(1, 1, body_type=pm.Body.DYNAMIC)
+        self.circle_b = pm.Body(1, 1, body_type=pm.Body.DYNAMIC)
 
         self.base_b.position = (400, 500)
-        circle_b.position = (400, 320)
+        self.circle_b.position = (400, 320)
 
-        joint = pm.PinJoint(circle_b, self.base_b, (0, 0), (0, -self.base_h/2))
-        base = pm.Poly(self.base_b, self.rect_shape(self.base_w, self.base_h))
-        circle = pm.Circle(circle_b, 1)
+        joint = pm.PinJoint(self.circle_b, self.base_b, (0, 0), (0, -self.base_h/2))
+        self.base = pm.Poly(self.base_b, self.rect_shape(self.base_w, self.base_h))
+        self.circle = pm.Circle(self.circle_b, 1)
 
-        space.add(circle_b, circle)
-        space.add(self.base_b, base)
-        space.add(joint)
+        self.space.add(self.circle_b, self.circle)
+        self.space.add(self.base_b, self.base)
+        self.space.add(joint)
 
         self.fallen = False
 
     def get_angle(self):
-        b2 = self.circle
-        b1 = self.base
+        b2 = self.circle_b
+        b1 = self.base_b
         return round((atan2(b2.position.y-b1.position.y,
                             b2.position.x-b1.position.x) *180/pi) + 90, 3)
 
     def move_base(self, delta_p):
-        self.move_base(delta_p)
+        self.move_body(delta_p)
         self.space.step(self.step_size)
         self.time_elapsed += self.step_size
 

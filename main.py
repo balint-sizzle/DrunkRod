@@ -18,8 +18,12 @@ def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         jack = Jack()
-        while jack.time_elapsed < 10 and not jack.fallen:
-            output = net.activate(jack.get_angle())
+        while jack.time_elapsed < 100 and not jack.fallen:
+            angle = jack.get_angle()
+            if abs(angle) > 45:
+                jack.fallen = True
+                break
+            output = net.activate([angle])[-1]
             jack.move_base(output * sigmoid_scaling_factor)
         genome.fitness = jack.time_elapsed
 
@@ -33,14 +37,17 @@ def run(config):
 
     # Create the population, which is the top-level object for a NEAT run.
     p = neat.Population(config)
+    print("Popoulation created")
 
     # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(5))
+    p.add_reporter(neat.Checkpointer(4))
+    print("Reporter created")
 
     # Run for up to 300 generations.
+    print("Starting run")
     winner = p.run(eval_genomes, 300)
 
     # Display the winning genome.
@@ -51,20 +58,19 @@ def run(config):
     winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
 
     jack_draw = RodDraw()
-    while jack_draw.jack_rod.time_elapsed < 10 and not jack_draw.jack_rod.fallen:
-        output = winner_net.activate(jack_draw.jack_rod.get_angle())
+    while jack_draw.jack_rod.time_elapsed < 100 and not jack_draw.jack_rod.fallen:
+        output = winner_net.activate([jack_draw.jack_rod.get_angle()])[-1]
         jack_draw.jack_rod.move_base(output * sigmoid_scaling_factor)
         jack_draw.draw()
-    sleep(2)
     jack_draw.kill()
 
-    node_names = {-1:'angle', 0:'delta_p'}
-    visualize.draw_net(config, winner, True, node_names=node_names)
-    visualize.plot_stats(stats, ylog=False, view=True)
-    visualize.plot_species(stats, view=True)
+    # node_names = {-1:'angle', 0:'delta_p'}
+    # visualize.draw_net(config, winner, True, node_names=node_names)
+    # visualize.plot_stats(stats, ylog=False, view=True)
+    # visualize.plot_species(stats, view=True)
 
-    p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-4')
-    p.run(eval_genomes, 10)
+    #p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-4')
+    #p.run(eval_genomes, 10)
 
 
 if __name__ == '__main__':
