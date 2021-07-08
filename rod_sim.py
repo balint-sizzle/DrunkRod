@@ -25,12 +25,12 @@ class Jack:
         self.space = pm.Space()
         
 
-        self.space._set_gravity((0,100))
+        self.space._set_gravity((0,1000))
         self.base_b = pm.Body(1, 100, body_type=pm.Body.KINEMATIC)
         self.circle_b = pm.Body(1, 1, body_type=pm.Body.DYNAMIC)
 
-        spice_factor = random.choice([random.randint(-200,-50),random.randint(50, 200)])
-        self.base_b.position = (400+spice_factor, 500)
+        spice_factor = random.choice([random.randint(-100,-50),random.randint(50, 100)])
+        self.base_b.position = (400+spice_factor, 600)
         self.circle_b.position = (400, 320)
 
         joint = pm.PinJoint(self.circle_b, self.base_b, (0, 0), (0, -self.base_h/2))

@@ -20,7 +20,7 @@ class RodDraw(Jack):
                                         neat.DefaultStagnation,
                                         "config.ini")
         stats = neat.StatisticsReporter()
-        with gzip.open("checkpoints/neat-checkpoint-"+"3") as f:
+        with gzip.open("checkpoints/neat-checkpoint-"+"265") as f:
             generation, config, population, species_set, rndstate = pickle.load(f)
             print(population.best_genome)
             nn = neat.nn.FeedForwardNetwork.create(population.best_genome, config)
@@ -30,11 +30,14 @@ class RodDraw(Jack):
                     if event.type == pg.QUIT:
                         pg.quit()
                         raise SystemExit
+                    if pg.key.get_pressed()[pg.K_RIGHT]:
+                        self.jack_rod.circle_b.position = (self.jack_rod.circle_b.position.x+20, self.jack_rod.circle_b.position.y)
+                    if pg.key.get_pressed()[pg.K_LEFT]:
+                        self.jack_rod.circle_b.position = (self.jack_rod.circle_b.position.x-20, self.jack_rod.circle_b.position.y)
                 output = nn.activate([self.jack_rod.get_angle()])[-1]
                 self.jack_rod.add_velocity(output * 10)
                 self.jack_rod.move_base()
                 self.draw()
-                print(self.jack_rod.time_elapsed)
 
     def draw(self):
         self.canvas.fill(pg.Color("Grey"))

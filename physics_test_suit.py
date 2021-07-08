@@ -24,7 +24,7 @@ class Jack:
         self.circle_b = pm.Body(1, 1, body_type=pm.Body.DYNAMIC)
 
         spice_factor = random.choice([-200, -150, -100, 100, 150, 200])
-        self.base_b.position = (100, 500)
+        self.base_b.position = (400, 400)
         self.circle_b.position = (400, 320)
 
         joint = pm.PinJoint(self.circle_b, self.base_b, (0, 0), (0, -self.base_h/2))
