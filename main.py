@@ -16,26 +16,22 @@ get average position of the base
 reward if the base is in the center
 """
 
-sigmoid_scaling_factor = 10
+sf = 10
 
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         jack = Jack()
-        pos = 0
         while jack.time_elapsed < 2000 and not jack.fallen:
             angle = jack.get_angle()
-            if abs(angle) > 45:
-                jack.fallen = True
-                break
             if jack.base_b.position.x < -200 or jack.base_b.position.x > 1000:
                 jack.fallen = True
-                break
             output = net.activate([angle])[-1]
-            jack.move_base(output * sigmoid_scaling_factor)
-            pos += jack.base_b.position.x-400
-        final_dev = pos/(jack.time_elapsed+1)+1
-        genome.fitness = jack.time_elapsed + 10 * (1/final_dev)
+            jack.add_velocity(output * sf)
+            jack.move_base()
+        genome.fitness = jack.time_elapsed
+        if abs(jack.base_b.position.x) - 400 > 200:
+            genome.fitness -= 1000
 
 def run(config):
     # Load configuration.
