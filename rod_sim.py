@@ -23,7 +23,6 @@ class Jack:
 
     def __init__(self):
         self.space = pm.Space()
-        
 
         self.space._set_gravity((0,1000))
         self.base_b = pm.Body(1, 100, body_type=pm.Body.KINEMATIC)
@@ -52,7 +51,7 @@ class Jack:
     def move_base(self):
         self.move_body()
         self.take_time_step()
-        if abs(self.get_angle()) > 45:
+        if abs(self.get_angle()) > 60:
             self.fallen = True
         return self.get_angle()
     

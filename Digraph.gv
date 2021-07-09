@@ -1,0 +1,11 @@
+digraph {
+	node [fontsize=9 height=0.2 shape=circle width=0.2]
+	angle [fillcolor=lightgray shape=box style=filled]
+	delta_p [fillcolor=lightblue style=filled]
+	4036 [fillcolor=white style=filled]
+	152 [fillcolor=white style=filled]
+	751 [fillcolor=white style=filled]
+	angle -> delta_p [color=green penwidth=1.3256627099205474 style=solid]
+	751 -> 152 [color=green penwidth=0.3302315157454126 style=solid]
+	angle -> 4036 [color=green penwidth=0.1807340288535935 style=solid]
+}
